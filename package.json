@@ -1,0 +1,10 @@
+{
+  "name": "react-iom-flights",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.11.1",
+    "serve-static": "^1.8.1"
+  }
+}

@@ -1,2 +1,3 @@
-# react-iom-flights
-Using React to display IOM flights using web api
+# React.js IOM Flights
+
+Using React.js to display IOM flights using web api

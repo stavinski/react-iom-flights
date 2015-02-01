@@ -89,7 +89,7 @@
     render: function () {
       var header = (this.props.error) ?
                       <span style={{color: 'red'}}>There was an issue retrieving flights</span>
-                    : <span>{this.props.updated}</span>;
+                    : <span>last updated <strong>{globals.moment(this.props.updated).fromNow()}</strong></span>;
       var arrivals = (this.props.direction == FLIGHT_DIRECTIONS.arrivals) ?
                        <button type="button" disabled="disabled" className="btn btn-primary active" role="button">
                           <span className="glyphicon glyphicon-plane arrivals-icon"></span> Arrivals
@@ -147,9 +147,17 @@
       return (<tr>
                 <td>{this.props.flight.id}</td>
                 <td>{this.props.flight.airport.fullname}</td>
-                <td>{this.props.flight.scheduled.local}</td>
+                <td><DateTimeFormatter date={this.props.flight.scheduled.local} format={'HH:mm:ss'} /></td>
                 <td>{this.props.flight.status}</td>
               </tr>);
+    }
+  });
+
+  var DateTimeFormatter = React.createClass({
+    render: function () {
+      var moment = globals.moment;
+
+      return (<span>{moment(this.props.date).format(this.props.format)}</span>);
     }
   });
 

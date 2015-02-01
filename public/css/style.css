@@ -1,0 +1,12 @@
+
+.arrivals-icon {
+    transform: rotate(220deg);
+    -ms-transform: rotate(220deg);
+    -webkit-transform: rotate(220deg);
+}
+
+.departures-icon {
+  transform: rotate(40deg);
+  -ms-transform: rotate(40deg);
+  -webkit-transform: rotate(40deg);
+}

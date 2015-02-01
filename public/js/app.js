@@ -13,7 +13,6 @@
 
     request.get(url)
            .type('application/json')
-           .withCredentials()
            .end(flightsResponse);
 
     function flightsResponse(err, response) {
@@ -29,12 +28,16 @@
     retrieveFlights: function () {
       var self = this;
 
+      self.state.refreshing = true;
+      self.setState(self.state);
+
       getFlights(this.state.direction, function (err, data) {
         self.setState({
           error: err,
           updated: (data) ? data.updated : null,
           flights: (data) ? data.flights : [],
-          direction: self.state.direction
+          direction: self.state.direction,
+          refreshing: false
         });
       });
     },
@@ -49,20 +52,27 @@
         error: null,
         updated: new Date(),
         flights: [],
-        direction: FLIGHT_DIRECTIONS.arrivals
+        direction: FLIGHT_DIRECTIONS.arrivals,
+        refreshing: true
       };
     },
     componentDidMount: function () {
       this.retrieveFlights();
     },
     render: function () {
+      var body = (this.state.refreshing) ? <div className="progress">
+                                              <div className="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style={{width: 100}}>
+                                              </div>
+                                            </div>
+                                          : <FlightsList flights={this.state.flights} />;
+
       return (<div className="row">
                 <FlightsHeader error={this.state.error}
                                updated={this.state.updated}
                                direction={this.state.direction}
                                onDirectionChange={this.handleDirectionChange}
                                onRefresh={this.retrieveFlights} />
-                <FlightsList flights={this.state.flights} />
+                {body}
               </div>);
     }
   });
@@ -78,29 +88,28 @@
     },
     render: function () {
       var header = (this.props.error) ?
-                      <h3 style={{color: 'red'}}>There was an issue retrieving flights</h3>
-                    : <h3>{this.props.updated}</h3>;
+                      <span style={{color: 'red'}}>There was an issue retrieving flights</span>
+                    : <span>{this.props.updated}</span>;
       var arrivals = (this.props.direction == FLIGHT_DIRECTIONS.arrivals) ?
                        <button type="button" disabled="disabled" className="btn btn-primary active" role="button">
-                          <span className="glyphicon glyphicon-plane"></span> Arrivals
+                          <span className="glyphicon glyphicon-plane arrivals-icon"></span> Arrivals
                        </button>
                      : <button type="button" onClick={this.handleDirectionChange} className="btn btn-primary" role="button">
-                          <span className="glyphicon glyphicon-plane"></span> Arrivals
+                          <span className="glyphicon glyphicon-plane arrivals-icon"></span> Arrivals
                        </button>;
       var departures = (this.props.direction == FLIGHT_DIRECTIONS.departures) ?
                        <button type="button" disabled="disabled" className="btn btn-primary active" role="button">
-                          <span className="glyphicon glyphicon-plane"></span> Departures
+                          <span className="glyphicon glyphicon-plane departures-icon"></span> Departures
                        </button>
                      : <button type="button" onClick={this.handleDirectionChange} className="btn btn-primary" role="button">
-                          <span className="glyphicon glyphicon-plane"></span> Departures
+                          <span className="glyphicon glyphicon-plane departures-icon"></span> Departures
                        </button>;
 
       return (<div className="row">
-                {header}
                 <div className="col-md-3">
                   <div className="btn-group" role="group">
-                    {arrivals}
-                    {departures}
+                  {arrivals}
+                  {departures}
                   </div>
                 </div>
                 <div className="col-md-offset-11">
@@ -108,6 +117,7 @@
                     <span className="glyphicon glyphicon-refresh"></span>
                   </button>
                 </div>
+                {header}
               </div>)
     }
   });
@@ -122,6 +132,9 @@
                 <table className="table table-striped">
                   <thead>
                     <th>Flight No.</th>
+                    <th>Airport</th>
+                    <th>Scheduled</th>
+                    <th>Status</th>
                   </thead>
                   <tbody>{flights}</tbody>
                 </table>
@@ -132,7 +145,10 @@
   var Flight = React.createClass({
     render: function () {
       return (<tr>
-                <td>{this.props.flight}</td>
+                <td>{this.props.flight.id}</td>
+                <td>{this.props.flight.airport.fullname}</td>
+                <td>{this.props.flight.scheduled.local}</td>
+                <td>{this.props.flight.status}</td>
               </tr>);
     }
   });

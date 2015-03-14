@@ -7,23 +7,6 @@
     departures: 'departures'
   };
 
-  var getFlights = function (direction, cb) {
-    var url = 'https://iom-flights.herokuapp.com/v1/flights/' + direction;
-    var request = globals.superagent;
-
-    request.get(url)
-           .type('application/json')
-           .end(flightsResponse);
-
-    function flightsResponse(err, response) {
-      if (err) {
-        cb(err, null);
-      } else {
-        cb(null, response.body);
-      }
-    }
-  };
-
   var App = React.createClass({
     retrieveFlights: function () {
       var self = this;
@@ -31,7 +14,7 @@
       self.state.refreshing = true;
       self.setState(self.state);
 
-      getFlights(this.state.direction, function (err, data) {
+      globals.flightApi.getFlights(this.state.direction, function (err, data) {
         self.setState({
           error: err,
           updated: (data) ? data.updated : null,
@@ -61,7 +44,7 @@
     },
     render: function () {
       var body = (this.state.refreshing) ? <div className="progress">
-                                              <div className="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style={{width: 100}}>
+                                              <div className="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style={{width: "100%"}}>
                                               </div>
                                             </div>
                                           : <FlightsList flights={this.state.flights} />;

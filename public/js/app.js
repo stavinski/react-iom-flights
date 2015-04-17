@@ -1,6 +1,5 @@
-'use strict';
-
 (function (globals) {
+  'use strict';
 
   var FLIGHT_DIRECTIONS = {
     arrivals: 'arrivals',
@@ -17,7 +16,7 @@
       globals.flightApi.getFlights(this.state.direction, function (err, data) {
         self.setState({
           error: err,
-          updated: (data) ? data.updated : null,
+          updated: (data) ? data.updated.local : null,
           flights: (data) ? data.flights : [],
           direction: self.state.direction,
           refreshing: false
@@ -43,6 +42,7 @@
       this.retrieveFlights();
     },
     render: function () {
+      /* jshint ignore:start */
       var body = (this.state.refreshing) ? <div className="progress">
                                               <div className="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style={{width: "100%"}}>
                                               </div>
@@ -57,6 +57,8 @@
                                onRefresh={this.retrieveFlights} />
                 {body}
               </div>);
+
+      /* jshint ignore:end */
     }
   });
 
@@ -70,6 +72,7 @@
       this.props.onDirectionChange(newDirection);
     },
     render: function () {
+      /* jshint ignore:start */
       var header = (this.props.error) ?
                       <span style={{color: 'red'}}>There was an issue retrieving flights</span>
                     : <span>last updated <strong>{globals.moment(this.props.updated).fromNow()}</strong></span>;
@@ -101,12 +104,14 @@
                   </button>
                 </div>
                 {header}
-              </div>)
+              </div>);
+      /* jshint ignore:end */
     }
   });
 
   var FlightsList = React.createClass({
     render: function () {
+      /* jshint ignore:start */
       var flights = this.props.flights.map(function (flight) {
         return (<Flight key={flight.id} flight={flight}/>);
       });
@@ -122,17 +127,20 @@
                   <tbody>{flights}</tbody>
                 </table>
               </div>);
+      /* jshint ignore:end */
     }
   });
 
   var Flight = React.createClass({
     render: function () {
+      /* jshint ignore:start */
       return (<tr>
                 <td>{this.props.flight.id}</td>
                 <td>{this.props.flight.airport.fullname}</td>
                 <td><DateTimeFormatter date={this.props.flight.scheduled.local} format={'HH:mm:ss'} /></td>
                 <td>{this.props.flight.status}</td>
               </tr>);
+      /* jshint ignore:end */
     }
   });
 
@@ -140,10 +148,14 @@
     render: function () {
       var moment = globals.moment;
 
+      /* jshint ignore:start */
       return (<span>{moment(this.props.date).format(this.props.format)}</span>);
+      /* jshint ignore:end */
     }
   });
 
+  /* jshint ignore:start */
   React.render(<App/>, globals.document.getElementById('flights-container'));
+  /* jshint ignore:end */
 
 }(window));
